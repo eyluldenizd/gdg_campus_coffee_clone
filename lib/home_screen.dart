@@ -3,7 +3,6 @@ import 'package:gdg_campus_coffee/branches/presentation/view/branches_screen.dar
 import 'package:gdg_campus_coffee/market/presentation/view/market_screen.dart';
 import 'package:gdg_campus_coffee/menu/presentation/view/menu_screen.dart';
 import 'package:gdg_campus_coffee/recommendation/presentation/view/recommendation_screen.dart';
-import 'package:gdg_campus_coffee/menu/data/repository/seed_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,36 +14,26 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentPageIndex = 0;
 
+  final List<String> _pageTitles = [
+    "Menu",
+    "Branches",
+    "Market",
+    "AI Suggestion",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              "Good Morning, Coffee Lover ☕",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-            ),
-            Text(
-              "Campus Coffee",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
+        title: const Text(
+          "Campus Coffee",
+          style: TextStyle(
+            fontSize: 26, // App ismi daha büyük
+            fontWeight: FontWeight.w900,
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await uploadSampleData();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Sample data uploaded to Firestore!')),
-            );
-          }
-        },
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        child: const Icon(Icons.cloud_upload, color: Colors.white),
-        tooltip: "Seed Database",
+        centerTitle: true, // Ortada hizalanmış
+        elevation: 0,
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -76,7 +65,44 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: <Widget>[MenuScreen(), BranchesScreen(), MarketScreen(), RecommendationScreen()][currentPageIndex],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Sekme adı barı (Sadece metni çevreleyecek büyüklükte, pill shape)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary.withOpacity(0.15), // Hafif karamel arka plan
+                borderRadius: BorderRadius.circular(24), // Oval (hap) şekli
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                _pageTitles[currentPageIndex],
+                style: TextStyle(
+                  fontSize: 16, // App isminden daha küçük
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary, // Koyu kahverengi
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+          // Sayfa İçeriği
+          Expanded(
+            child: const <Widget>[
+              MenuScreen(),
+              BranchesScreen(),
+              MarketScreen(),
+              RecommendationScreen(),
+            ][currentPageIndex],
+          ),
+        ],
+      ),
     );
   }
 }
