@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "729395961568",
+    "project_id": "campus-coffee-clone",
+    "storage_bucket": "campus-coffee-clone.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729395961568:android:92d5829df3d79c48bbba85",
+        "android_client_info": {
+          "package_name": "com.example.gdg_campus_coffee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvP088ioG_mIIFS73U8x7-CEArxc-hv7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
