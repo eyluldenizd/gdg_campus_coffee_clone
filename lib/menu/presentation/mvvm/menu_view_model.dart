@@ -7,14 +7,21 @@ class MenuViewModel extends ChangeNotifier {
 
   bool loading = false;
   List<Product> products = [];
+  String? error;
 
   Future<void> fetchProducts() async {
     loading = true;
+    error = null;
     notifyListeners();
 
-    products = await _getProductsUseCase();
-
-    loading = false;
-    notifyListeners();
+    try {
+      products = await _getProductsUseCase();
+    } catch (e) {
+      error = e.toString();
+      products = [];
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
   }
 }

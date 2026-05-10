@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gdg_campus_coffee/branches/presentation/view/branches_screen.dart';
+import 'package:gdg_campus_coffee/cart/presentation/mvvm/cart_view_model.dart';
+import 'package:gdg_campus_coffee/cart/presentation/view/cart_screen.dart';
 import 'package:gdg_campus_coffee/market/presentation/view/market_screen.dart';
 import 'package:gdg_campus_coffee/menu/presentation/view/menu_screen.dart';
 import 'package:gdg_campus_coffee/recommendation/presentation/view/recommendation_screen.dart';
@@ -13,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentPageIndex = 0;
+  late final CartViewModel cartViewModel;
 
   final List<String> _pageTitles = [
     "Menu",
@@ -20,6 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
     "Market",
     "AI Suggestion",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    cartViewModel = CartViewModel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +43,64 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true, // Ortada hizalanmış
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ListenableBuilder(
+              listenable: cartViewModel,
+              builder: (context, child) {
+                final itemCount = cartViewModel.itemCount;
+                return Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.shopping_cart_outlined, size: 28),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const CartScreen(),
+                          ),
+                        );
+                      },
+                      style: IconButton.styleFrom(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surface.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    if (itemCount > 0)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 20,
+                            minHeight: 20,
+                          ),
+                          child: Text(
+                            itemCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -51,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.storefront_outlined),
             selectedIcon: Icon(Icons.storefront),
-            label: 'Branches',
+            label: 'Şubeler',
           ),
           NavigationDestination(
             icon: Icon(Icons.shopping_bag_outlined),
@@ -65,42 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Sekme adı barı (Sadece metni çevreleyecek büyüklükte, pill shape)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withOpacity(0.15), // Hafif karamel arka plan
-                borderRadius: BorderRadius.circular(24), // Oval (hap) şekli
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                _pageTitles[currentPageIndex],
-                style: TextStyle(
-                  fontSize: 16, // App isminden daha küçük
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary, // Koyu kahverengi
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-          ),
-          // Sayfa İçeriği
-          Expanded(
-            child: const <Widget>[
-              MenuScreen(),
-              BranchesScreen(),
-              MarketScreen(),
-              RecommendationScreen(),
-            ][currentPageIndex],
-          ),
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: const [
+          MenuScreen(),
+          BranchesScreen(),
+          MarketScreen(),
+          RecommendationScreen(),
         ],
       ),
     );
